@@ -1,7 +1,7 @@
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 
-object parens {
+object ParenthesesSequenceCorrectness {
 
   object solution {
 
