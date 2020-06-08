@@ -76,18 +76,18 @@ object parens {
           // if stack is empty, the correct slot for opening pair of X is found
           case Nil =>
             val pair = getPair(x)
-            left.appended(pair).appendedAll(right)
+            left :+ pair :++ right
 
           // the closing char is found, putting it to the stack, saving in the right part
           case _ if left.nonEmpty && isClosing(left.last) =>
             val leftLast      = left.last
-            val stackWithChar = stack.appended(leftLast)
-            rec(left.dropRight(1), right.prepended(leftLast), stackWithChar, x)
+            val stackWithChar = stack :+ leftLast
+            rec(left.dropRight(1), leftLast +: right, stackWithChar, x)
 
           // the opening is found, so popping one from the stack
           // no validation like isPair(x, y) is used since the history should always be correct
           case _ if left.nonEmpty =>
-            rec(left.dropRight(1), right.prepended(left.last), stack.dropRight(1), x)
+            rec(left.dropRight(1), left.last +: right, stack.dropRight(1), x)
 
           // we can't be here
           case _ =>
@@ -102,16 +102,14 @@ object parens {
         case x :: xs if x == ' ' =>
           rec(stack, history, xs)
 
-        // opening char is found, just pushing it to the stack
+        // opening char is found, just pushing it
+        // to the stack and the history
         case x :: xs if isOpening(x) =>
-          val stackWithChar   = stack.appended(x)
-          val historyWithChar = history.appended(x)
-
-          rec(stackWithChar, historyWithChar, xs)
+          rec(stack :+ x, history :+ x, xs)
 
         // closing char is found pairing with the head of the stack
         case x :: xs if isClosing(x) && stack.nonEmpty && isPairing(stack.last, x) =>
-          rec(stack.dropRight(1), history.appended(x), xs)
+          rec(stack.dropRight(1), history :+ x, xs)
 
         // closing char is found not pairing!:
         // stack is not empty, so we can't just append (pairOfX(x), x) to the history
@@ -124,7 +122,7 @@ object parens {
         // a closing char with an empty stack
         // just putting opening pair and then X
         case x :: xs if isClosing(x) && stack.isEmpty =>
-          val fixedHistory = history.appended(getPair(x)).appended(x)
+          val fixedHistory = history :+ getPair(x) :+ x
           rec(stack, fixedHistory, xs)
 
         // all went well, we are done
@@ -135,7 +133,7 @@ object parens {
         // just adding a closing pair and pop _ from the stack
         case Nil =>
           val pair = getPair(stack.last)
-          rec(stack.dropRight(1), history.appended(pair), Nil)
+          rec(stack.dropRight(1), history :+ pair, Nil)
       }
 
     def apply(x: String): String = {
