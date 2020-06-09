@@ -5,7 +5,7 @@ object ParenthesesSequenceCorrectness {
 
   object solution {
 
-    private def isOpening(ch: Char): Boolean =
+    def isOpening(ch: Char): Boolean =
       ch match {
         case '(' => true
         case '{' => true
@@ -13,7 +13,7 @@ object ParenthesesSequenceCorrectness {
         case _   => false
       }
 
-    private def isClosing(ch: Char): Boolean =
+    def isClosing(ch: Char): Boolean =
       ch match {
         case ')' => true
         case '}' => true
@@ -21,7 +21,7 @@ object ParenthesesSequenceCorrectness {
         case _   => false
       }
 
-    private def isPairing(x: Char, y: Char): Boolean =
+    def isPairing(x: Char, y: Char): Boolean =
       (x, y) match {
         case ('(', ')') => true
         case ('{', '}') => true
@@ -39,26 +39,6 @@ object ParenthesesSequenceCorrectness {
         case '}' => '{'
         case _   => throw new RuntimeException("unreachable")
       }
-
-    def isBalanced(s: String): Boolean =
-      isBalanced(s.toCharArray.toList)
-
-    // a classic var based implementation for checks
-    def isBalanced(s: List[Char]): Boolean = {
-      var st = ListBuffer.empty[Char]
-      for (ch <- s) {
-        if (isClosing(ch)) {
-          if (!isPairing(st.last, ch)) {
-            return false
-          } else {
-            st = st.dropRight(1)
-          }
-        } else {
-          st = st.addOne(ch)
-        }
-      }
-      st.isEmpty
-    }
 
     private object insertWherePossible {
       def apply(history: List[Char], x: Char): List[Char] = {
